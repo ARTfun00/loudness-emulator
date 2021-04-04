@@ -10,7 +10,10 @@
 
 # production
 /build
-
+#folders
+.idea
+#files
+package-lock.json
 # development build
 /dist
 
