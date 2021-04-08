@@ -30,27 +30,27 @@ const config = [
         }
       }
     ]
-  },
-  {
-    inlineLayout: [
-      {
-        label: 'Start',
-        name: 'start',
-        Component: TimePicker,
-        rules: {
-          required: 'Enter start time'
-        }
-      },
-      {
-        label: 'End',
-        name: 'end',
-        Component: TimePicker,
-        rules: {
-          required: 'Enter end time'
-        }
-      }
-    ]
   }
+  // {
+  //   inlineLayout: [
+  //     {
+  //       label: 'Start',
+  //       name: 'start',
+  //       Component: TimePicker,
+  //       rules: {
+  //         required: 'Enter start time'
+  //       }
+  //     },
+  //     {
+  //       label: 'End',
+  //       name: 'end',
+  //       Component: TimePicker,
+  //       rules: {
+  //         required: 'Enter end time'
+  //       }
+  //     }
+  //   ]
+  // }
 ]
 interface TimePointProps {
   onSubmit: any
