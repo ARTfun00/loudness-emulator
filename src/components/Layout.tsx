@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Container, Col, Row } from '@qonsoll/react-design'
 import { SizeForm, ListPoint } from './index'
 import { Typography } from '@material-ui/core'
+import * as d3 from 'd3'
 
 const jsonGraph = {
   nodes: [
@@ -50,12 +51,14 @@ const jsonGraph = {
   ]
 }
 
-const d3 = require('d3')
+// const d3 = require('d3')
 const { useForm } = require('mui-form-generator-fractal-band-2')
 
 const Layout: React.FC<Record<string, unknown>> = ({}) => {
   const form = useForm()
   const d3ChartRef = useRef<HTMLDivElement>(null)
+
+  const [state, setState] = useState()
 
   const onSubmit = (data: any): void => {
     console.log(data)
@@ -63,7 +66,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
   }
 
   useEffect(() => {
-    // let isComponentMounted = true
+    let isComponentMounted = true
 
     // if (isComponentMounted) {
     const width = 500
@@ -112,40 +115,43 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
       .data([...jsonGraph.nodes])
       .enter()
       .append('circle')
-      .attr('r', 4)
+      .attr('r', 8)
       .attr('cx', function (d: any) {
         return d.x
       })
       .attr('cy', function (d: any) {
         return d.y
       })
-      .call(d3.drag().on('drag', dragged))
 
-    function dragged(d: any): void {
-      const newX = d.sourceEvent.x
-      const newY = d.sourceEvent.y
+    svg.selectAll('circle').call(
+      d3.drag<any, any, SVGLineElement>().on('drag', function (event, d) {
+        const newX = event.x
+        const newY = event.y
 
-      d.x = newX
-      d.y = newY
-      d3.select(d3ChartRef.current).attr('cx', newX).attr('cy', newY)
+        d.x = newX
+        d.y = newY
 
-      link
-        .filter(function (l: any) {
-          return l.source === d
-        })
-        .attr('x1', newX)
-        .attr('y1', newY)
-      link
-        .filter(function (l: any) {
-          return l.target === d
-        })
-        .attr('x2', newX)
-        .attr('y2', newY)
-    }
-    // }
+        d3.select(this)
+          .attr('cx', (d.x = newX))
+          .attr('cy', (d.y = newY))
+
+        link
+          .filter(function (l: any) {
+            return l.source === d
+          })
+          .attr('x1', newX)
+          .attr('y1', newY)
+        link
+          .filter(function (l: any) {
+            return l.target === d
+          })
+          .attr('x2', newX)
+          .attr('y2', newY)
+      })
+    )
 
     return () => {
-      // isComponentMounted = false
+      isComponentMounted = false
     }
   }, [])
 
@@ -155,8 +161,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
         <Col>
           <Row>
             <Col cw={7} border="1px solid red">
-              <div ref={d3ChartRef} />
-              Chart will be here!
+              <div ref={d3ChartRef} style={{ backgroundColor: 'white' }} />
             </Col>
             <Col cw={5}>
               <Row v={'center'} h={'center'} noInnerGutters>
