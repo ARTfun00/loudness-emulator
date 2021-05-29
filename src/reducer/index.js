@@ -2,8 +2,8 @@ import { v4 } from 'uuid'
 import _ from 'lodash'
 import moment from 'moment'
 
-const rootReducer = (state, action) => {
-  switch (action.type) {
+const rootReducer = (state, { type, payload }) => {
+  switch (type) {
     case 'ADD_POINT':
       return {
         ...state,
@@ -11,16 +11,18 @@ const rootReducer = (state, action) => {
           ...state.points,
           {
             id: v4(),
-            pointName: action.payload.pointName,
-            start: moment(action.payload.start).format('HH:mm'),
-            end: moment(action.payload.end).format('HH:mm'),
-            value: action.payload.value
+            name: payload.name,
+            start: moment(payload.start).format('HH:mm'),
+            end: moment(payload.end).format('HH:mm'),
+            value: payload.value,
+            x: payload.x,
+            y: payload.y
           }
         ]
       }
     case 'DELETE_POINT': {
       const newTasks = _.remove(state.points, (item) => {
-        return item.id === action.payload
+        return item.id === payload
       })
       return {
         ...state,

@@ -3,62 +3,36 @@ import { Container, Col, Row } from '@qonsoll/react-design'
 import { SizeForm, ListPoint } from './index'
 import { Typography } from '@material-ui/core'
 import * as d3 from 'd3'
+import UserIcon from '../assets/user-icon.ico'
+import NoiceSourceIcon from '../assets/noice-source.ico'
+import { useStore } from '../context'
+const { useForm } = require('mui-form-generator-fractal-band-2')
 
-const jsonGraph = {
-  nodes: [
-    {
-      x: 135,
-      y: 275
-    },
-    {
-      x: 69,
-      y: 324
-    },
-    {
-      x: 169,
-      y: 278
-    },
-    {
-      x: 162,
-      y: 256
-    },
-    {
-      x: 73,
-      y: 269
-    }
-  ],
-  links: [
-    {
-      source: 0,
-      target: 2
-    },
-    {
-      source: 1,
-      target: 2
-    },
-    {
-      source: 2,
-      target: 0
-    },
-    {
-      source: 3,
-      target: 2
-    },
-    {
-      source: 4,
-      target: 2
-    }
-  ]
+interface Nodes {
+  x: number
+  y: number
+  name?: string
+  icon?: string
+  isUser: boolean
+}
+interface Links {
+  source: number
+  target: number
 }
 
-// const d3 = require('d3')
-const { useForm } = require('mui-form-generator-fractal-band-2')
+const userNode: Nodes = {
+  x: 300,
+  y: 250,
+  name: 'Person',
+  icon: UserIcon,
+  isUser: true
+}
 
 const Layout: React.FC<Record<string, unknown>> = ({}) => {
   const form = useForm()
   const d3ChartRef = useRef<HTMLDivElement>(null)
-
-  const [state, setState] = useState()
+  const { points, areaWidth, areaHeight } = useStore()
+  console.log('points:', points)
 
   const onSubmit = (data: any): void => {
     console.log(data)
@@ -68,92 +42,133 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
   useEffect(() => {
     let isComponentMounted = true
 
-    // if (isComponentMounted) {
-    const width = 500
-    const height = 500
+    if (isComponentMounted) {
+      const nodes = [
+        userNode,
+        ...points.map((point: any) => ({
+          x: point.x,
+          y: point.y,
+          name: point.name,
+          icon: NoiceSourceIcon,
+          isUser: false
+        }))
+      ]
+      const links = nodes.map((node, index) => ({
+        source: index,
+        target: 0
+      }))
 
-    jsonGraph.links.forEach(function (d: any) {
-      // console.log('==>', jsonGraph.nodes[d.source])
-      d.source = jsonGraph.nodes[d.source]
-      d.target = jsonGraph.nodes[d.target]
-    })
-    console.log('data:', jsonGraph)
-
-    const svg = d3
-      .select(d3ChartRef.current)
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height)
-
-    const link = svg
-      .append('g')
-      .attr('class', 'link')
-      .style('stroke', '#999')
-      .selectAll('line')
-      .data([...jsonGraph.links])
-      .enter()
-      .append('line')
-      .attr('x1', function (d: any) {
-        return d.source.x
-      })
-      .attr('y1', function (d: any) {
-        return d.source.y
-      })
-      .attr('x2', function (d: any) {
-        return d.target.x
-      })
-      .attr('y2', function (d: any) {
-        return d.target.y
+      links.forEach(function (d: any) {
+        d.source = nodes[d.source]
+        d.target = nodes[d.target]
       })
 
-    const node = svg
-      .append('g')
-      .attr('class', 'node')
-      .style('stroke', '#fff')
-      .style('stroke-width', '1.5px')
-      .selectAll('circle')
-      .data([...jsonGraph.nodes])
-      .enter()
-      .append('circle')
-      .attr('r', 8)
-      .attr('cx', function (d: any) {
-        return d.x
-      })
-      .attr('cy', function (d: any) {
-        return d.y
-      })
+      // removing of old svg
+      d3.selectAll('svg').remove()
 
-    svg.selectAll('circle').call(
-      d3.drag<any, any, SVGLineElement>().on('drag', function (event, d) {
-        const newX = event.x
-        const newY = event.y
+      // painting of new svg with it's content (children)
+      const svg = d3
+        .select(d3ChartRef.current)
+        .append('svg')
+        .attr('width', areaWidth)
+        .attr('height', areaHeight)
 
-        d.x = newX
-        d.y = newY
+      const link = svg
+        .append('g')
+        .attr('class', 'link')
+        .style('stroke', '#999')
+        .selectAll('line')
+        .data(links)
+        .enter()
+        .append('line')
+        .attr('x1', function (d: any) {
+          return d.source.x
+        })
+        .attr('y1', function (d: any) {
+          return d.source.y
+        })
+        .attr('x2', function (d: any) {
+          return d.target.x
+        })
+        .attr('y2', function (d: any) {
+          return d.target.y
+        })
 
-        d3.select(this)
-          .attr('cx', (d.x = newX))
-          .attr('cy', (d.y = newY))
+      svg
+        .append('g')
+        .attr('class', 'nodes')
+        .selectAll('g')
+        .data(nodes)
+        .enter()
+        .append('g')
+        .attr('class', 'node')
+        .attr('transform', function (d) {
+          return 'translate(' + d.x + ',' + d.y + ')'
+        })
+        // .append('circle')
+        // .attr('r', 8)
+        .attr('cx', function (d: any) {
+          return d.x
+        })
+        .attr('cy', function (d: any) {
+          return d.y
+        })
 
-        link
-          .filter(function (l: any) {
-            return l.source === d
-          })
-          .attr('x1', newX)
-          .attr('y1', newY)
-        link
-          .filter(function (l: any) {
-            return l.target === d
-          })
-          .attr('x2', newX)
-          .attr('y2', newY)
-      })
-    )
+      const nodesSelector = svg.selectAll('.node')
 
+      nodesSelector
+        .append('image')
+        .attr('xlink:href', function (d: any) {
+          return d.icon || ''
+        })
+        .attr('x', -8)
+        .attr('y', -8)
+        .attr('width', 16)
+        .attr('height', 16)
+
+      nodesSelector
+        .append('text')
+        .attr('dx', 12)
+        .attr('dy', '.35em')
+        .attr('pointer-events', 'none')
+        .attr('font', '10px sans-serif')
+        .text(function (d: any) {
+          return (d && d.name) || ''
+        })
+
+      // drag&drop function
+      svg.selectAll('.node').call(
+        d3.drag<any, any, SVGLineElement>().on('drag', function (event, d) {
+          const newX = event.x
+          const newY = event.y
+
+          d.x = newX
+          d.y = newY
+
+          d3.select(this)
+            // .attr('cx', ())
+            // .attr('cy', ())
+            .attr('transform', `translate(${(d.x = newX)}, ${(d.y = newY)})`)
+
+          link
+            .filter(function (l: any) {
+              return l.source === d
+            })
+            .attr('x1', newX)
+            .attr('y1', newY)
+          link
+            .filter(function (l: any) {
+              return l.target === d
+            })
+            .attr('x2', newX)
+            .attr('y2', newY)
+        })
+      )
+    }
     return () => {
       isComponentMounted = false
     }
-  }, [])
+  }, [points])
 
   return (
     <Container>

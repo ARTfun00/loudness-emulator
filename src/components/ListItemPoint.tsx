@@ -4,15 +4,15 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { useStoreContext } from '../context'
 import React from 'react'
 interface ListItemProps {
-  pointName: string
+  name: string
   start: string
   end: string
   value: number
   id: any
 }
 const ListItemPoint = (props: ListItemProps) => {
-  const { pointName, start, end, value, id } = props
-  const pointNameLabel = `Name: ${pointName}`
+  const { name, start, end, value, id } = props
+  const pointNameLabel = `Name: ${name}`
   const rangeDate = `From: ${start} To: ${end}`
   const valueLabel = `Value: ${value}`
   const { dispatch } = useStoreContext()

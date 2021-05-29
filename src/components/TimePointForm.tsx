@@ -14,7 +14,7 @@ const config = [
       {
         type: 'text',
         label: 'Point Name',
-        name: 'pointName',
+        name: 'name',
         placeholder: 'Enter point name',
         rules: {
           required: 'Enter point name'

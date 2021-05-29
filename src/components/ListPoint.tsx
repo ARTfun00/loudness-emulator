@@ -31,7 +31,7 @@ const ListPoint = () => {
             points?.points?.map((item: any, index: number) => (
               <ListItemPoint
                 key={index}
-                pointName={item.pointName}
+                name={item.name}
                 start={item.start}
                 end={item.end}
                 value={item.value}

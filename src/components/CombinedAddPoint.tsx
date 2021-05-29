@@ -1,13 +1,16 @@
 import React, { useState } from 'react'
 import { Button } from '@material-ui/core'
 import { Modal, TimePointForm } from './index'
-import { useStoreContext } from '../context'
+import { useStoreContext, useStore } from '../context'
 const { useForm } = require('mui-form-generator-fractal-band-2')
 
 interface CombinedProps {
   title: string
   children?: JSX.Element
 }
+
+const getRandomTillNumber = (maxValue = 1) =>
+  Math.floor(Math.random() * maxValue) + 1
 
 const CombinedAddPoint: React.FC<CombinedProps> = (props) => {
   // [INTERFACES]
@@ -19,10 +22,18 @@ const CombinedAddPoint: React.FC<CombinedProps> = (props) => {
   // [ADDITIONAL_HOOKS]
   const form = useForm()
   const { dispatch } = useStoreContext()
+  const { areaWidth, areaHeight } = useStore()
 
   // [HELPER_FUNCTIONS]
   const onAddPoint = (data: Record<string, unknown>): void => {
-    dispatch({ type: 'ADD_POINT', payload: data })
+    dispatch({
+      type: 'ADD_POINT',
+      payload: {
+        ...data,
+        x: getRandomTillNumber(areaWidth),
+        y: getRandomTillNumber(areaHeight)
+      }
+    })
     setOpen(false)
     form.reset({})
   }
@@ -60,7 +71,7 @@ const CombinedAddPoint: React.FC<CombinedProps> = (props) => {
         }}
         buttonSubmitText={'Add point'}>
         <TimePointForm
-          show={['pointName', 'value', 'start', 'end']}
+          show={['name', 'value', 'start', 'end']}
           onSubmit={onAddPoint}
           form={form}
           buttonProps={{ visible: false }}
