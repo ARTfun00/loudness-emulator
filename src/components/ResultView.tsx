@@ -6,6 +6,53 @@ import { useStoreContext } from '../context'
 import { Col, Row } from '@qonsoll/react-design'
 import { Typography } from '@material-ui/core'
 
+const mockDataForPart2: Array<Array<any>> = [
+  [
+    {
+      name: 'Point1',
+      L0: 103.4
+    }
+  ],
+  [
+    {
+      name: 'Point1',
+      L0: 103.4
+    },
+    { name: 'Point3', L0: 115.4 }
+  ],
+  [
+    {
+      name: 'Point2',
+      L0: 110.0
+    },
+    { name: 'Point3', L0: 115.4 }
+  ],
+  [
+    {
+      name: 'Point2',
+      L0: 110.0
+    },
+    { name: 'Point3', L0: 115.4 },
+    {
+      name: 'Point4',
+      L0: 115.91
+    }
+  ],
+  [
+    { name: 'Point3', L0: 115.4 },
+    {
+      name: 'Point4',
+      L0: 115.91
+    }
+  ],
+  [
+    {
+      name: 'Point4',
+      L0: 115.91
+    }
+  ]
+]
+
 const ResultView = () => {
   const arrayI: Array<number> = []
   const arrayL0: Array<number> = []
