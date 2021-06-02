@@ -1,8 +1,8 @@
 import { Col, Row } from '@qonsoll/react-design'
-import { ListItemText, IconButton, Paper, Typography } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
+import { ListItemText, Button, Paper, Typography } from '@material-ui/core'
 import { useStoreContext } from '../context'
 import React from 'react'
+import DeleteIcon from '@material-ui/icons/Delete'
 interface ListItemProps {
   name: string
   start: string
@@ -33,13 +33,13 @@ const ListItemPoint = (props: ListItemProps) => {
               </Typography>
             </Col>
             <Col cw={'auto'}>
-              <IconButton
-                style={{ padding: '0px' }}
-                aria-label="delete"
+              <Button
+                startIcon={<DeleteIcon />}
+                variant="contained"
                 color="secondary"
                 onClick={() => dispatch({ type: 'DELETE_POINT', payload: id })}>
-                <DeleteIcon />
-              </IconButton>
+                {'Delete'}
+              </Button>
             </Col>
           </Row>
           <Row v={'center'} display={'contents'}>
