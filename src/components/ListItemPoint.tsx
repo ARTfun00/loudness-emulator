@@ -11,9 +11,9 @@ interface ListItemProps {
 }
 const ListItemPoint = (props: ListItemProps) => {
   const { name, start, end, value, id } = props
-  const pointNameLabel = `Name: ${name}`
-  const rangeDate = `From: ${start} To: ${end}`
-  const valueLabel = `Value: ${value}`
+  const pointNameLabel = `Назва: ${name}`
+  const rangeDate = `З: ${start} До: ${end}`
+  const valueLabel = `Значення: ${value}`
   const { dispatch } = useStoreContext()
 
   return (
@@ -36,7 +36,7 @@ const ListItemPoint = (props: ListItemProps) => {
                 variant="contained"
                 color="secondary"
                 onClick={() => dispatch({ type: 'DELETE_POINT', payload: id })}>
-                {'Delete'}
+                {'Видалити'}
               </Button>
             </Col>
           </Row>

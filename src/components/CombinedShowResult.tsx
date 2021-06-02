@@ -39,7 +39,7 @@ const CombinedShowResult: React.FC<CombinedProps> = (props) => {
           onClick: handleClose
         }}
         withoutButtonSubmit={true}
-        buttonCancelText={'Close'}>
+        buttonCancelText={'Закрити'}>
         {<ResultView />}
       </Modal>
     </>

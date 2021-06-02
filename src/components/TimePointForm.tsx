@@ -13,20 +13,20 @@ const config = [
     inlineLayout: [
       {
         type: 'text',
-        label: 'Point Name',
+        label: 'Ім’я точки',
         name: 'name',
-        placeholder: 'Enter point name',
+        placeholder: 'Введіть ім’я',
         rules: {
-          required: 'Enter point name'
+          required: 'Введіть ім’я'
         }
       },
       {
         type: 'number',
-        label: 'Value',
+        label: 'Значення',
         name: 'value',
-        placeholder: 'Enter Value',
+        placeholder: 'Введіть значення',
         rules: {
-          required: 'Enter Value'
+          required: 'Введіть значення'
         }
       }
     ]
@@ -34,19 +34,19 @@ const config = [
   {
     inlineLayout: [
       {
-        label: 'Start',
+        label: 'Початок',
         name: 'start',
         Component: TimePicker,
         rules: {
-          required: 'Enter start time'
+          required: 'Введіть початковий час'
         }
       },
       {
-        label: 'End',
+        label: 'Кінець',
         name: 'end',
         Component: TimePicker,
         rules: {
-          required: 'Enter end time'
+          required: 'Введіть кінцевий час'
         }
       }
     ]

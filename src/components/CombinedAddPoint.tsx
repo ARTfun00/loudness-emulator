@@ -69,7 +69,8 @@ const CombinedAddPoint: React.FC<CombinedProps> = (props) => {
           variant: 'contained',
           onClick: handleClose
         }}
-        buttonSubmitText={'Add point'}>
+        buttonSubmitText={'Додати точку'}
+        buttonCancelText={'Закрити'}>
         <TimePointForm
           show={['name', 'value', 'start', 'end']}
           onSubmit={onAddPoint}
