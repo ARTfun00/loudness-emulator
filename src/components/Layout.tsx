@@ -22,7 +22,7 @@ interface Links {
 
 const userNode: Nodes = {
   x: 300,
-  y: 250,
+  y: 300,
   name: 'Person',
   icon: UserIcon,
   isUser: true
@@ -70,8 +70,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
       const svg = d3
         .select(d3ChartRef.current)
         .append('svg')
-        .attr('width', areaWidth)
-        .attr('height', areaHeight)
+        .attr('viewBox', `0 0 ${areaWidth} ${areaHeight}`)
 
       const link = svg
         .append('g')

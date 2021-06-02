@@ -8,7 +8,7 @@ import React from 'react'
 const App: React.FC<Record<string, unknown>> = ({}) => {
   return (
     <ThemeProvider theme={Theme}>
-      <Provider store={{ points: [], areaWidth: 500, areaHeight: 500 }}>
+      <Provider store={{ points: [], areaWidth: 600, areaHeight: 600 }}>
         <Layout />
       </Provider>
     </ThemeProvider>
