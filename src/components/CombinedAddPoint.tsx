@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Button } from '@material-ui/core'
 import { Modal, TimePointForm } from './index'
 import { useStoreContext, useStore } from '../context'
+import SoundIntensity from '../functions/SoundIntensity'
+import SoundIntensityLevel from '../functions/SoundIntensityLevel'
 const { useForm } = require('mui-form-generator-fractal-band-2')
 
 interface CombinedProps {
@@ -25,11 +27,14 @@ const CombinedAddPoint: React.FC<CombinedProps> = (props) => {
   const { areaWidth, areaHeight } = useStore()
 
   // [HELPER_FUNCTIONS]
-  const onAddPoint = (data: Record<string, unknown>): void => {
+  const onAddPoint = (data: Record<string, any>): void => {
+    const I: number = SoundIntensity(data?.value)
+    const L0: number = SoundIntensityLevel(I)
     dispatch({
       type: 'ADD_POINT',
       payload: {
         ...data,
+        L0: L0,
         x: getRandomTillNumber(areaWidth),
         y: getRandomTillNumber(areaHeight)
       }
