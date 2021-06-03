@@ -81,40 +81,39 @@ const ResultView = () => {
     const L: number = SoundPressureLevel(item.value, 30)
     arrayL.push(L)
   })
-
+  console.log(arrayTotalSoundLevel)
   return (
-    <>
-      <Row>
-        <Col>
+    <Row noGutters>
+      <Typography>{'I:'}</Typography>
+      <Col ml={2}>
+        {arrayI.map((item: number, index: number) => (
+          <Typography key={index}>{item.toFixed(3)}</Typography>
+        ))}
+      </Col>
+      <Typography>{'L0:'}</Typography>
+      <Col ml={2}>
+        {arrayL0.map((item: number, index: number) => (
+          <Typography key={index}>{item.toFixed(1)}</Typography>
+        ))}
+      </Col>
+      <Typography>{'L:'}</Typography>
+      <Col ml={2}>
+        {arrayL.map((item: number, index: number) => (
+          <Typography key={index}>{item.toFixed(2)}</Typography>
+        ))}
+      </Col>
+      <Typography>{'L сумарне:'}</Typography>
+      <Col cw={'auto'} ml={2}>
+        {arrayTotalSoundLevel.map((item, index) => (
           <Row>
-            <Typography>{'I:'}</Typography>
+            <Typography key={index}>{item.totalValue.toFixed(2)}</Typography>
             <Col>
-              {arrayI.map((item: number, index: number) => (
-                <Typography key={index}>{item.toFixed(3)}</Typography>
-              ))}
-            </Col>
-            <Typography>{'L0:'}</Typography>
-            <Col>
-              {arrayL0.map((item: number, index: number) => (
-                <Typography key={index}>{item.toFixed(1)}</Typography>
-              ))}
-            </Col>
-            <Typography>{'L:'}</Typography>
-            <Col>
-              {arrayL.map((item: number, index: number) => (
-                <Typography key={index}>{item.toFixed(2)}</Typography>
-              ))}
-            </Col>
-            <Typography>{'L сумарне:'}</Typography>
-            <Col>
-              {arrayTotalSoundLevel.map((item: number, index: number) => (
-                <Typography key={index}>{item.toFixed(2)}</Typography>
-              ))}
+              <Typography key={index}>{item.pointsName}</Typography>
             </Col>
           </Row>
-        </Col>
-      </Row>
-    </>
+        ))}
+      </Col>
+    </Row>
   )
 }
 export default ResultView

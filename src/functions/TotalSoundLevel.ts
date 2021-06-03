@@ -17,19 +17,25 @@ Now after calculate we have 6 intervals
 
 const TotalSoundLevel = (arrayWithIntervals: Array<any>): Array<any> => {
   const result: Array<any> = []
-  let LArrayBuffer: Array<number> = []
+
   arrayWithIntervals.forEach((interval: Array<any>) => {
     if (interval.length === 1) {
       const LOnePoint: Array<number> = interval.map((point) => point.L0)
-      result.push(LOnePoint[0])
+      const LOnePointName: Array<string> = interval.map((point) => point.name)
+      result.push({ pointsName: LOnePointName, totalValue: LOnePoint[0] })
     }
     if (interval.length !== 0 && interval.length > 1) {
-      LArrayBuffer = interval.map((point) => Math.pow(10, 0.1 * point.L0))
+      const LArrayBuffer: Array<number> = interval.map((point) =>
+        Math.pow(10, 0.1 * point.L0)
+      )
+      const LManyPointsName: Array<string> = interval.map(
+        (point) => point.name + ' '
+      )
       const sum: number = LArrayBuffer.reduce(
         (accumulator, currentValue) => accumulator + currentValue
       )
       const LTotalManyPoints = 10 * Math.log10(sum)
-      result.push(LTotalManyPoints)
+      result.push({ pointsName: LManyPointsName, totalValue: LTotalManyPoints })
     }
   })
 

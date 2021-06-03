@@ -29,7 +29,7 @@ const CombinedShowResult: React.FC<CombinedProps> = (props) => {
         open={open}
         title={title}
         dialogProps={{
-          maxWidth: 'sm',
+          maxWidth: 'md',
           fullWidth: true
         }}
         buttonCancelProps={{
