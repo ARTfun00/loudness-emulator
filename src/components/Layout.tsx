@@ -15,10 +15,10 @@ interface Nodes {
   icon?: string
   isUser: boolean
 }
-interface Links {
-  source: number
-  target: number
-}
+// interface Links {
+//   source: number
+//   target: number
+// }
 
 const userNode: Nodes = {
   x: 300,
@@ -53,17 +53,19 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
           isUser: false
         }))
       ]
-      const links = nodes.map((node, index) => ({
-        source: index,
-        target: 0
-      }))
+      const linksData = nodes
+        .map((node, index) => ({
+          source: index,
+          target: 0
+        }))
+        .slice(1) // to remove self-targeting first element
 
-      links.forEach(function (d: any) {
+      linksData.forEach(function (d: any) {
         d.source = nodes[d.source]
         d.target = nodes[d.target]
       })
 
-      // removing of old svg
+      // removing of old svg on update
       d3.selectAll('svg').remove()
 
       // painting of new svg with it's content (children)
@@ -71,14 +73,21 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
         .select(d3ChartRef.current)
         .append('svg')
         .attr('viewBox', `0 0 ${areaWidth} ${areaHeight}`)
+        .attr('overflow', 'visible')
 
-      const link = svg
+      // links container (for all elements)
+      const linksSelection = svg
         .append('g')
-        .attr('class', 'link')
+        .attr('class', 'links')
         .style('stroke', '#999')
         .selectAll('line')
-        .data(links)
+        .data(linksData)
         .enter()
+        .append('g')
+        .attr('class', 'line')
+
+      // links
+      const links = linksSelection
         .append('line')
         .attr('x1', function (d: any) {
           return d.source.x
@@ -93,7 +102,27 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
           return d.target.y
         })
 
-      svg
+      // text to the lines
+      const linkTexts = linksSelection
+        .append('text')
+        .attr('transform', function (d: any) {
+          const midpointX = (d.target.x + d.source.x) / 2
+          const midpointY = (d.target.y + d.source.y) / 2
+
+          return `translate(${midpointX},${midpointY})`
+        })
+        .attr('pointer-events', 'none')
+        .attr('font', '6px sans-serif')
+        .text(function (d: any) {
+          const dx = d.target.x - d.source.x
+          const dy = d.target.y - d.source.y
+          const distanceInPixels = Math.sqrt(dx * dx + dy * dy)
+
+          return Math.round((Number.EPSILON + distanceInPixels) * 100) / 100
+        })
+
+      // container for the nodes (images with text)
+      const nodesSelector = svg
         .append('g')
         .attr('class', 'nodes')
         .selectAll('g')
@@ -101,11 +130,9 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
         .enter()
         .append('g')
         .attr('class', 'node')
-        .attr('transform', function (d) {
-          return 'translate(' + d.x + ',' + d.y + ')'
+        .attr('transform', function (d: any) {
+          return `translate(${d.x},${d.y})`
         })
-        // .append('circle')
-        // .attr('r', 8)
         .attr('cx', function (d: any) {
           return d.x
         })
@@ -113,8 +140,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
           return d.y
         })
 
-      const nodesSelector = svg.selectAll('.node')
-
+      // node images
       nodesSelector
         .append('image')
         .attr('xlink:href', function (d: any) {
@@ -125,6 +151,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
         .attr('width', 16)
         .attr('height', 16)
 
+      // node texts
       nodesSelector
         .append('text')
         .attr('dx', 12)
@@ -138,29 +165,96 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
       // drag&drop function
       svg.selectAll('.node').call(
         d3.drag<any, any, SVGLineElement>().on('drag', function (event, d) {
+          // const svgElement = svg.node()
+          // const svgBoundingClientRect = svgElement?.getBoundingClientRect()
+
+          // border limits
+          const XAxisMin = 0
+          const YAxisMin = 0
+          const XAxisMax = areaWidth
+          const YAxisMax = areaHeight
+          // const XAxisMax = svgBoundingClientRect?.width || areaWidth
+          // const YAxisMax = svgBoundingClientRect?.height || areaHeight
+          const padding = {
+            top: 8,
+            bottom: 8,
+            left: 8,
+            right: 8
+          }
+
           const newX = event.x
           const newY = event.y
 
-          d.x = newX
-          d.y = newY
+          const isNewXPointPossibleToPlace =
+            newX > XAxisMin + padding.left && newX < XAxisMax - padding.right
+          const isNewYPointPossibleToPlace =
+            newY > YAxisMin + padding.top && newY < YAxisMax - padding.bottom
 
-          d3.select(this)
-            // .attr('cx', ())
-            // .attr('cy', ())
-            .attr('transform', `translate(${(d.x = newX)}, ${(d.y = newY)})`)
+          // checks for borders&limits (wether drag&drop possible)
+          if (isNewXPointPossibleToPlace || isNewYPointPossibleToPlace) {
+            const currentTransformTranslateString = d3
+              .select(this)
+              .attr('transform')
+            const transformTranslateStringValueFormatted = currentTransformTranslateString
+              .replace('translate(', '')
+              .replace(')', '')
+            const [oldX, oldY] = transformTranslateStringValueFormatted.split(
+              ', '
+            )
+            let newXValueForTransformTranslateComputed = oldX
+            let newYValueForTransformTranslateComputed = oldY
 
-          link
-            .filter(function (l: any) {
+            // D&D for links
+            const sourceLinks = links.filter(function (l: any) {
               return l.source === d
             })
-            .attr('x1', newX)
-            .attr('y1', newY)
-          link
-            .filter(function (l: any) {
+            const targetLinks = links.filter(function (l: any) {
               return l.target === d
             })
-            .attr('x2', newX)
-            .attr('y2', newY)
+
+            if (isNewXPointPossibleToPlace) {
+              d.x = newX
+
+              sourceLinks.attr('x1', newX)
+              targetLinks.attr('x2', newX)
+
+              newXValueForTransformTranslateComputed = newX
+            }
+            if (isNewYPointPossibleToPlace) {
+              d.y = newY
+
+              sourceLinks.attr('y1', newY)
+              targetLinks.attr('y2', newY)
+
+              newYValueForTransformTranslateComputed = newY
+            }
+
+            d3.select(this).attr(
+              'transform',
+              `translate(${newXValueForTransformTranslateComputed}, ${newYValueForTransformTranslateComputed})`
+            )
+
+            // D&D for link texts
+            linkTexts
+              .filter(function (l: any) {
+                return l.source === d
+              })
+              .attr('transform', function (d: any) {
+                const midpointX = (d.target.x + d.source.x) / 2
+                const midpointY = (d.target.y + d.source.y) / 2
+
+                return `translate(${midpointX},${midpointY})`
+              })
+              .text(function (d: any) {
+                const dx = d.target.x - d.source.x
+                const dy = d.target.y - d.source.y
+                const distanceInPixels = Math.sqrt(dx * dx + dy * dy)
+
+                return (
+                  Math.round((Number.EPSILON + distanceInPixels) * 100) / 100
+                )
+              })
+          }
         })
       )
     }
@@ -172,32 +266,31 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
   return (
     <Container>
       <Row>
-        <Col>
-          <Row>
-            <Col cw={7} border="1px solid red">
-              <div ref={d3ChartRef} style={{ backgroundColor: 'white' }} />
+        <Col cw={7}>
+          <div
+            ref={d3ChartRef}
+            style={{ backgroundColor: 'white', border: '1px solid red' }}
+          />
+        </Col>
+        <Col cw={5}>
+          <Row v={'center'} h={'center'} noInnerGutters>
+            <Col>
+              <Row h="center">
+                <Col cw={'auto'}>
+                  <Typography>Enter room size</Typography>
+                </Col>
+              </Row>
+              <SizeForm
+                form={form}
+                onSubmit={onSubmit}
+                show={['height', 'width']}
+                buttonProps={{ visibleCancel: false }}
+              />
             </Col>
-            <Col cw={5}>
-              <Row v={'center'} h={'center'} noInnerGutters>
-                <Col>
-                  <Row h="center">
-                    <Col cw={'auto'}>
-                      <Typography>Enter room size</Typography>
-                    </Col>
-                  </Row>
-                  <SizeForm
-                    form={form}
-                    onSubmit={onSubmit}
-                    show={['height', 'width']}
-                    buttonProps={{ visibleCancel: false }}
-                  />
-                </Col>
-              </Row>
-              <Row v={'center'} h={'center'} noInnerGutters>
-                <Col>
-                  <ListPoint />
-                </Col>
-              </Row>
+          </Row>
+          <Row v={'center'} h={'center'} noInnerGutters>
+            <Col>
+              <ListPoint />
             </Col>
           </Row>
         </Col>
