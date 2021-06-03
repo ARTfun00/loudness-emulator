@@ -6,6 +6,7 @@ import { useStoreContext } from '../context'
 import { Col, Row } from '@qonsoll/react-design'
 import { Typography } from '@material-ui/core'
 import TotalSoundLevel from '../functions/TotalSoundLevel'
+import TotalSum from '../functions/TotalSum'
 
 //P1= {
 // L0: 103.4145865271959
@@ -14,51 +15,70 @@ import TotalSoundLevel from '../functions/TotalSoundLevel'
 // start: "12:00"
 // value: "3"
 //   }
-const mockDataForPart2: Array<Array<any>> = [
-  [
-    {
-      name: 'Point1',
-      L0: 103.4
-    }
-  ],
-  [
-    {
-      name: 'Point1',
-      L0: 103.4
-    },
-    { name: 'Point3', L0: 115.4 }
-  ],
-  [
-    {
-      name: 'Point2',
-      L0: 110.0
-    },
-    { name: 'Point3', L0: 115.4 }
-  ],
-  [
-    {
-      name: 'Point2',
-      L0: 110.0
-    },
-    { name: 'Point3', L0: 115.4 },
-    {
-      name: 'Point4',
-      L0: 115.91
-    }
-  ],
-  [
-    { name: 'Point3', L0: 115.4 },
-    {
-      name: 'Point4',
-      L0: 115.91
-    }
-  ],
-  [
-    {
-      name: 'Point4',
-      L0: 115.91
-    }
-  ]
+// const exampleMockData = [{interval:[P1,P2],duration:0.5},{interval:[P3],duration:2.5},{interval:[P3,P4],duration:1}]
+const mockDataForPart2: Array<any> = [
+  {
+    interval: [
+      {
+        name: 'Point1',
+        L0: 103.4
+      }
+    ],
+    duration: 0.5
+  },
+  {
+    interval: [
+      {
+        name: 'Point1',
+        L0: 103.4
+      },
+      { name: 'Point3', L0: 115.4 }
+    ],
+    duration: 2.5
+  },
+  {
+    interval: [
+      {
+        name: 'Point2',
+        L0: 110.0
+      },
+      { name: 'Point3', L0: 115.4 }
+    ],
+    duration: 1.0
+  },
+  {
+    interval: [
+      {
+        name: 'Point2',
+        L0: 110.0
+      },
+      { name: 'Point3', L0: 115.4 },
+      {
+        name: 'Point4',
+        L0: 115.91
+      }
+    ],
+    duration: 1.5
+  },
+  {
+    interval: [
+      { name: 'Point3', L0: 115.4 },
+      {
+        name: 'Point4',
+        L0: 115.91
+      }
+    ],
+    duration: 0.5
+  },
+  {
+    interval: [
+      {
+        name: 'Point4',
+        L0: 115.91
+      }
+    ],
+    duration: 1.0
+  }
 ]
 
 const ResultView = () => {
@@ -66,6 +86,7 @@ const ResultView = () => {
   const arrayL0: Array<number> = []
   const arrayL: Array<number> = []
   const arrayTotalSoundLevel: Array<any> = TotalSoundLevel(mockDataForPart2)
+  const LA: number = TotalSum(arrayTotalSoundLevel)
   const { store } = useStoreContext()
   const [points, setPoints] = useState(store)
   useEffect(() => {
@@ -81,7 +102,6 @@ const ResultView = () => {
     const L: number = SoundPressureLevel(item.value, 30)
     arrayL.push(L)
   })
-
   return (
     <Row noGutters>
       <Typography>{'I:'}</Typography>
@@ -112,6 +132,10 @@ const ResultView = () => {
             </Col>
           </Row>
         ))}
+      </Col>
+      <Typography>{'LA = '}</Typography>
+      <Col ml={2}>
+        <Typography>{LA.toFixed(2)}</Typography>
       </Col>
     </Row>
   )
