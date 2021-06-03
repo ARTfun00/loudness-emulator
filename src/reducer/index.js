@@ -12,6 +12,7 @@ const rootReducer = (state, { type, payload }) => {
           {
             id: v4(),
             name: payload.name,
+            L0: payload.L0,
             start: moment(payload.start).format('HH:mm'),
             end: moment(payload.end).format('HH:mm'),
             value: payload.value,

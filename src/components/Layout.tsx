@@ -277,7 +277,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
             <Col>
               <Row h="center">
                 <Col cw={'auto'}>
-                  <Typography>Enter room size</Typography>
+                  <Typography>{'Введіть розмір кімнати:'}</Typography>
                 </Col>
               </Row>
               <SizeForm

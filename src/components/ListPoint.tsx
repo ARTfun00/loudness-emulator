@@ -16,7 +16,7 @@ const ListPoint = () => {
     <Container mt={3}>
       <Row h="center" noGutters>
         <Col cw={'auto'}>
-          <Typography>Point List</Typography>
+          <Typography>{'Список точок:'}</Typography>
         </Col>
       </Row>
       <Row noGutters>
@@ -43,16 +43,16 @@ const ListPoint = () => {
       </Row>
       <Row noGutters mt={2} v={'center'} h={'between'}>
         <Col cw="auto">
-          <CombinedAddPoint title="Add points">
+          <CombinedAddPoint title="Додати точку">
             <Button variant="contained" type="submit" color="primary">
-              Add Point
+              {'Додати точку'}
             </Button>
           </CombinedAddPoint>
         </Col>
         <Col cw="auto">
-          <CombinedShowResult title="Result">
+          <CombinedShowResult title="Результати">
             <Button variant="contained" color="primary">
-              Show result
+              {'Результати'}
             </Button>
           </CombinedShowResult>
         </Col>

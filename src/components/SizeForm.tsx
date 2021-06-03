@@ -11,20 +11,20 @@ const config = [
     inlineLayout: [
       {
         type: 'number',
-        label: 'Height',
-        name: 'height',
-        placeholder: 'Enter height',
+        label: 'Ширина',
+        name: 'width',
+        placeholder: 'Введіть ширину',
         rules: {
-          required: 'Enter height'
+          required: 'Введіть ширину'
         }
       },
       {
         type: 'number',
-        label: 'Width',
-        name: 'width',
-        placeholder: 'Enter width',
+        label: 'Довжина',
+        name: 'height',
+        placeholder: 'Введіть довжину',
         rules: {
-          required: 'Enter widths'
+          required: 'Введіть довжину'
         }
       }
     ]
@@ -41,7 +41,11 @@ const SizeForm = (props: SizeFormProps) => {
   return (
     <Form form={form} onSubmit={onSubmit}>
       <FormGenerator config={config} show={show} />
-      <FormButtons Button={Button} {...buttonProps} />
+      <FormButtons
+        Button={Button}
+        {...buttonProps}
+        submitText={'Застосувати'}
+      />
     </Form>
   )
 }
