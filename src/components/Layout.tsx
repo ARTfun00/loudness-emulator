@@ -1,12 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Container, Col, Row } from '@qonsoll/react-design'
-import { SizeForm, ListPoint } from './index'
-import { Typography } from '@material-ui/core'
+// import { SizeForm, ListPoint } from './index'
+import { ListPoint } from './index'
+// import { Typography } from '@material-ui/core'
 import * as d3 from 'd3'
 import UserIcon from '../assets/user-icon.ico'
 import NoiceSourceIcon from '../assets/noice-source.ico'
-import { useStore } from '../context'
-const { useForm } = require('mui-form-generator-fractal-band-2')
+import { useStore, useStoreContext } from '../context'
+
+// const { useForm } = require('mui-form-generator-fractal-band-2')
+
+// window width in meters
+const areaWidthInMeters = 40
+const areaHeightInMeters = 40
 
 interface Nodes {
   x: number
@@ -23,32 +29,34 @@ interface Nodes {
 const userNode: Nodes = {
   x: 300,
   y: 300,
-  name: 'Person',
+  name: 'Людина',
   icon: UserIcon,
   isUser: true
 }
 
 const Layout: React.FC<Record<string, unknown>> = ({}) => {
-  const form = useForm()
+  // const form = useForm()
   const d3ChartRef = useRef<HTMLDivElement>(null)
   const { points, areaWidth, areaHeight } = useStore()
+  const { dispatch } = useStoreContext()
   console.log('points:', points)
 
-  const onSubmit = (data: any): void => {
-    console.log(data)
-    form.reset({})
-  }
+  // const onSubmit = (data: any): void => {
+  //   console.log(data)
+  //   form.reset({})
+  // }
 
   useEffect(() => {
     let isComponentMounted = true
 
     if (isComponentMounted) {
+      const scalingMultiplierOfWidth = areaWidth / areaWidthInMeters
+      const scalingMultiplierOfHeight = areaHeight / areaHeightInMeters
+
       const nodes = [
         userNode,
         ...points.map((point: any) => ({
-          x: point.x,
-          y: point.y,
-          name: point.name,
+          ...point,
           icon: NoiceSourceIcon,
           isUser: false
         }))
@@ -56,7 +64,9 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
       const linksData = nodes
         .map((node, index) => ({
           source: index,
-          target: 0
+          target: 0,
+          sourceId: node.id,
+          distanceInMetersToSource: 0
         }))
         .slice(1) // to remove self-targeting first element
 
@@ -79,7 +89,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
       const linksSelection = svg
         .append('g')
         .attr('class', 'links')
-        .style('stroke', '#999')
+        .style('stroke', '#999') // will add color to the linking lines
         .selectAll('line')
         .data(linksData)
         .enter()
@@ -116,9 +126,14 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
         .text(function (d: any) {
           const dx = d.target.x - d.source.x
           const dy = d.target.y - d.source.y
-          const distanceInPixels = Math.sqrt(dx * dx + dy * dy)
+          const dxInMeters = dx / scalingMultiplierOfWidth
+          const dyInMeters = dy / scalingMultiplierOfHeight
 
-          return Math.round((Number.EPSILON + distanceInPixels) * 100) / 100
+          const distanceInMeters = Math.sqrt(
+            Math.pow(dxInMeters, 2) + Math.pow(dyInMeters, 2)
+          )
+
+          return Math.round((Number.EPSILON + distanceInMeters) * 100) / 100
         })
 
       // container for the nodes (images with text)
@@ -203,6 +218,8 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
             )
             let newXValueForTransformTranslateComputed = oldX
             let newYValueForTransformTranslateComputed = oldY
+            let newDX = d.x
+            let newDY = d.y
 
             // D&D for links
             const sourceLinks = links.filter(function (l: any) {
@@ -214,6 +231,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
 
             if (isNewXPointPossibleToPlace) {
               d.x = newX
+              newDX = newX
 
               sourceLinks.attr('x1', newX)
               targetLinks.attr('x2', newX)
@@ -222,6 +240,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
             }
             if (isNewYPointPossibleToPlace) {
               d.y = newY
+              newDY = newY
 
               sourceLinks.attr('y1', newY)
               targetLinks.attr('y2', newY)
@@ -236,9 +255,9 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
 
             // D&D for link texts
             linkTexts
-              .filter(function (l: any) {
-                return l.source === d
-              })
+              // .filter(function (l: any) {
+              //   return l.target === d
+              // })
               .attr('transform', function (d: any) {
                 const midpointX = (d.target.x + d.source.x) / 2
                 const midpointY = (d.target.y + d.source.y) / 2
@@ -248,12 +267,40 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
               .text(function (d: any) {
                 const dx = d.target.x - d.source.x
                 const dy = d.target.y - d.source.y
-                const distanceInPixels = Math.sqrt(dx * dx + dy * dy)
-
-                return (
-                  Math.round((Number.EPSILON + distanceInPixels) * 100) / 100
+                const dxInMeters = dx / scalingMultiplierOfWidth
+                const dyInMeters = dy / scalingMultiplierOfHeight
+                const distanceInMeters = Math.sqrt(
+                  Math.pow(dxInMeters, 2) + Math.pow(dyInMeters, 2)
                 )
+                const distanceInMetersFormatted =
+                  Math.round((Number.EPSILON + distanceInMeters) * 100) / 100
+
+                const currentLinkData = linksData.find(
+                  (linkData) => linkData.sourceId === d.sourceId
+                )
+                if (currentLinkData) {
+                  currentLinkData.distanceInMetersToSource = distanceInMetersFormatted
+                }
+
+                return distanceInMetersFormatted
               })
+
+            // updating of the context with new poin locations (for sources only)
+            if (!d.isUser && d.id) {
+              dispatch({
+                type: 'UPDATE_POINT_LOCATION',
+                payload: {
+                  id: d.id,
+                  x: newDX,
+                  y: newDY
+                }
+              })
+            }
+            // updation of distance (for any point)
+            dispatch({
+              type: 'UPDATE_POINT_DISTANCES',
+              payload: linksData
+            })
           }
         })
       )
@@ -273,7 +320,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
           />
         </Col>
         <Col cw={5}>
-          <Row v={'center'} h={'center'} noInnerGutters>
+          {/* <Row v={'center'} h={'center'} noInnerGutters>
             <Col>
               <Row h="center">
                 <Col cw={'auto'}>
@@ -287,7 +334,7 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
                 buttonProps={{ visibleCancel: false }}
               />
             </Col>
-          </Row>
+          </Row> */}
           <Row v={'center'} h={'center'} noInnerGutters>
             <Col>
               <ListPoint />

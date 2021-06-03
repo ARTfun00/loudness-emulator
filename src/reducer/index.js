@@ -30,6 +30,21 @@ const rootReducer = (state, { type, payload }) => {
         points: state.points.filter((it) => it.id !== newTasks[0])
       }
     }
+    case 'UPDATE_POINT_LOCATION': {
+      const indexOfUpdationElement = _.findIndex(
+        state.points,
+        (point) => point.id === payload.id
+      )
+      const updationObject = state.points[indexOfUpdationElement]
+
+      updationObject.x = payload.x
+      updationObject.y = payload.y
+
+      return state
+    }
+    case 'UPDATE_POINT_DISTANCES': {
+      return Object.assign({ ...state, linksData: payload })
+    }
     default:
       return state
   }
