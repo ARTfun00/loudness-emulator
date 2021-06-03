@@ -81,29 +81,33 @@ const ResultView = () => {
     const L: number = SoundPressureLevel(item.value, 30)
     arrayL.push(L)
   })
-  // console.log('mockDataForPart2', mockDataForPart2)
-  console.log('arrayTotalSoundLevel', arrayTotalSoundLevel)
 
   return (
     <>
       <Row>
         <Col>
           <Row>
-            <Typography>I:</Typography>
+            <Typography>{'I:'}</Typography>
             <Col>
               {arrayI.map((item: number, index: number) => (
                 <Typography key={index}>{item.toFixed(3)}</Typography>
               ))}
             </Col>
-            <Typography>L0:</Typography>
+            <Typography>{'L0:'}</Typography>
             <Col>
               {arrayL0.map((item: number, index: number) => (
                 <Typography key={index}>{item.toFixed(1)}</Typography>
               ))}
             </Col>
-            <Typography>L:</Typography>
+            <Typography>{'L:'}</Typography>
             <Col>
               {arrayL.map((item: number, index: number) => (
+                <Typography key={index}>{item.toFixed(2)}</Typography>
+              ))}
+            </Col>
+            <Typography>{'L сумарне:'}</Typography>
+            <Col>
+              {arrayTotalSoundLevel.map((item: number, index: number) => (
                 <Typography key={index}>{item.toFixed(2)}</Typography>
               ))}
             </Col>
