@@ -81,7 +81,7 @@ const ResultView = () => {
     const L: number = SoundPressureLevel(item.value, 30)
     arrayL.push(L)
   })
-  console.log(arrayTotalSoundLevel)
+
   return (
     <Row noGutters>
       <Typography>{'I:'}</Typography>
