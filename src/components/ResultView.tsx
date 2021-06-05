@@ -28,9 +28,9 @@ const ResultView = () => {
     }
 
     const fromValue = new Date(
-      `1970-01-${fromDayComputed} ` + point.start
+      `1970-02-${fromDayComputed} ` + point.start
     ).getTime()
-    const toValue = new Date(`1970-01-${toDayComputed} ` + point.end).getTime()
+    const toValue = new Date(`1970-02-${toDayComputed} ` + point.end).getTime()
 
     return [fromValue, toValue, point]
   })
@@ -40,7 +40,7 @@ const ResultView = () => {
     .reduce((prev: any, cur: any) => [...prev, ...cur.slice(0, 2)], [])
     .sort((a: any, b: any) => a - b)
 
-  console.log(sortedRangesTimePoints)
+  console.log('sortedRangesTimePoints:', sortedRangesTimePoints)
 
   const sortedRanges: Array<any> = []
   sortedRangesTimePoints.forEach(
@@ -52,7 +52,7 @@ const ResultView = () => {
     }
   )
 
-  console.log(sortedRanges)
+  console.log('sortedRanges:', sortedRanges)
 
   const resultFormatted = sortedRanges.map(([rangeTimeStart, rangeTimeEnd]) => {
     // creation of duration value
@@ -79,7 +79,7 @@ const ResultView = () => {
     }
   })
 
-  console.log(resultFormatted)
+  console.log('resultFormatted:', resultFormatted)
   const arrayTotalSoundLevel: Array<any> = TotalSoundLevel(resultFormatted)
   const LA: number = TotalSum(arrayTotalSoundLevel)
 
