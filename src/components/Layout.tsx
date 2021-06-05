@@ -7,6 +7,7 @@ import * as d3 from 'd3'
 import UserIcon from '../assets/user-icon.ico'
 import NoiceSourceIcon from '../assets/noice-source.ico'
 import { useStore, useStoreContext } from '../context'
+import _ from 'lodash'
 
 // const { useForm } = require('mui-form-generator-fractal-band-2')
 
@@ -128,12 +129,23 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
           const dy = d.target.y - d.source.y
           const dxInMeters = dx / scalingMultiplierOfWidth
           const dyInMeters = dy / scalingMultiplierOfHeight
-
           const distanceInMeters = Math.sqrt(
             Math.pow(dxInMeters, 2) + Math.pow(dyInMeters, 2)
           )
+          const distanceInMetersFormatted =
+            Math.round((Number.EPSILON + distanceInMeters) * 100) / 100
 
-          return Math.round((Number.EPSILON + distanceInMeters) * 100) / 100
+          const currentLinkIndex = _.findIndex(
+            linksData,
+            (linkData) => linkData.sourceId === d.sourceId
+          )
+          const currentLink = linksData[currentLinkIndex]
+
+          if (currentLink) {
+            currentLink.distanceInMetersToSource = distanceInMetersFormatted
+          }
+
+          return distanceInMetersFormatted
         })
 
       // container for the nodes (images with text)
@@ -176,6 +188,12 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
         .text(function (d: any) {
           return (d && d.name) || ''
         })
+
+      // init new point coordinates and distances
+      dispatch({
+        type: 'INIT_POINTS',
+        payload: { linksData }
+      })
 
       // drag&drop function
       svg.selectAll('.node').call(
@@ -275,31 +293,36 @@ const Layout: React.FC<Record<string, unknown>> = ({}) => {
                 const distanceInMetersFormatted =
                   Math.round((Number.EPSILON + distanceInMeters) * 100) / 100
 
-                const currentLinkData = linksData.find(
+                const currentLinkIndex = _.findIndex(
+                  linksData,
                   (linkData) => linkData.sourceId === d.sourceId
                 )
-                if (currentLinkData) {
-                  currentLinkData.distanceInMetersToSource = distanceInMetersFormatted
+                const currentLink = linksData[currentLinkIndex]
+
+                if (currentLink) {
+                  currentLink.distanceInMetersToSource = distanceInMetersFormatted
                 }
 
                 return distanceInMetersFormatted
               })
 
             // updating of the context with new poin locations (for sources only)
+            let pointData = {}
+
             if (!d.isUser && d.id) {
-              dispatch({
-                type: 'UPDATE_POINT_LOCATION',
-                payload: {
-                  id: d.id,
-                  x: newDX,
-                  y: newDY
-                }
-              })
+              pointData = {
+                id: d.id,
+                x: newDX,
+                y: newDY
+              }
             }
             // updation of distance (for any point)
             dispatch({
-              type: 'UPDATE_POINT_DISTANCES',
-              payload: linksData
+              type: 'UPDATE_POINT',
+              payload: {
+                ...pointData,
+                linksData
+              }
             })
           }
         })

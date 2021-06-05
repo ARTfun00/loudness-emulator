@@ -30,20 +30,50 @@ const rootReducer = (state, { type, payload }) => {
         points: state.points.filter((it) => it.id !== newTasks[0])
       }
     }
-    case 'UPDATE_POINT_LOCATION': {
-      const indexOfUpdationElement = _.findIndex(
-        state.points,
-        (point) => point.id === payload.id
-      )
-      const updationObject = state.points[indexOfUpdationElement]
+    case 'UPDATE_POINT': {
+      const { points } = state
+      const { id, x, y, linksData } = payload
 
-      updationObject.x = payload.x
-      updationObject.y = payload.y
+      if (id) {
+        const indexOfUpdationElement = _.findIndex(
+          points,
+          (point) => point.id === id
+        )
+        const updationObject = points[indexOfUpdationElement]
 
-      return state
+        updationObject.x = x
+        updationObject.y = y
+      }
+
+      // updating of distance between points
+      if (linksData?.length) {
+        linksData.forEach(({ sourceId, distanceInMetersToSource }) => {
+          points.forEach((point) => {
+            if (point.id === sourceId) {
+              point.distanceInMetersToSource = distanceInMetersToSource
+            }
+          })
+        })
+      }
+
+      return Object.assign({ ...state, linksData: linksData })
     }
-    case 'UPDATE_POINT_DISTANCES': {
-      return Object.assign({ ...state, linksData: payload })
+    case 'INIT_POINTS': {
+      const { points } = state
+      const { linksData } = payload
+
+      // updating of distance between points
+      if (linksData?.length) {
+        linksData.forEach(({ sourceId, distanceInMetersToSource }) => {
+          points.forEach((point) => {
+            if (point.id === sourceId) {
+              point.distanceInMetersToSource = distanceInMetersToSource
+            }
+          })
+        })
+      }
+
+      return Object.assign({ ...state, linksData: linksData || [] })
     }
     default:
       return state

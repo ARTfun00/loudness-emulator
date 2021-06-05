@@ -1,21 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import SoundIntensity from '../functions/SoundIntensity'
 import SoundIntensityLevel from '../functions/SoundIntensityLevel'
 import SoundPressureLevel from '../functions/SoundPressureLevel'
-import { useStoreContext } from '../context'
+import { useStore } from '../context'
 import { Col, Row } from '@qonsoll/react-design'
 import { Typography } from '@material-ui/core'
 import TotalSoundLevel from '../functions/TotalSoundLevel'
 import TotalSum from '../functions/TotalSum'
+import moment from 'moment'
 
-//P1= {
-// L0: 103.4145865271959
-// end: "09:30"
-// name: "point1"
-// start: "12:00"
-// value: "3"
-//   }
-// const exampleMockData = [{interval:[P1,P2],duration:0.5},{interval:[P3],duration:2.5},{interval:[P3,P4],duration:1}]
 const mockDataForPart2: Array<any> = [
   {
     interval: [
@@ -87,19 +80,84 @@ const ResultView = () => {
   const arrayL: Array<number> = []
   const arrayTotalSoundLevel: Array<any> = TotalSoundLevel(mockDataForPart2)
   const LA: number = TotalSum(arrayTotalSoundLevel)
-  const { store } = useStoreContext()
-  const [points, setPoints] = useState(store)
-  useEffect(() => {
-    setPoints(store)
-  }, [store])
+  const { points } = useStore()
+  const pointsFormatted = points.map((point: any) => {
+    let fromDayComputed = '01'
+    let toDayComputed = '01'
+    const isFromTimeStartsFromNextDay = `${point.start}`.split(':')[0] === '00'
 
-  points?.points?.map((item: any) => {
+    if (isFromTimeStartsFromNextDay) {
+      fromDayComputed = '02'
+      toDayComputed = '02'
+    }
+    if (isFromTimeStartsFromNextDay || `${point.end}`.split(':')[0] === '00') {
+      toDayComputed = '02'
+    }
+
+    const fromValue = new Date(
+      `1970-01-${fromDayComputed} ` + point.start
+    ).getTime()
+    const toValue = new Date(`1970-01-${toDayComputed} ` + point.end).getTime()
+
+    return [fromValue, toValue, point]
+  })
+  console.log('pointsFormatted:', pointsFormatted)
+
+  const sortedRangesTimePoints = pointsFormatted
+    .reduce((prev: any, cur: any) => [...prev, ...cur.slice(0, 2)], [])
+    .sort((a: any, b: any) => a - b)
+
+  console.log(sortedRangesTimePoints)
+
+  const sortedRanges: Array<any> = []
+  sortedRangesTimePoints.forEach(
+    (currentTimePointValue: number, index: number) => {
+      const nextTimePointValue = sortedRangesTimePoints[index + 1]
+      if (currentTimePointValue && nextTimePointValue) {
+        sortedRanges.push([currentTimePointValue, nextTimePointValue])
+      }
+    }
+  )
+
+  console.log(sortedRanges)
+
+  const resultFormatted = sortedRanges.map(([rangeTimeStart, rangeTimeEnd]) => {
+    // creation of duration value
+    const rangeStartInMoment = moment(rangeTimeStart)
+    const rangeEndInMoment = moment(rangeTimeEnd)
+    const intervalDurationRaw = moment
+      .duration(rangeEndInMoment.diff(rangeStartInMoment))
+      .asHours() // add rounding here
+    const intervalDurationFormatted =
+      Math.round((Number.EPSILON + intervalDurationRaw) * 100) / 100
+
+    // creation of intervals (in the specific format)
+    const pointsRelatedToInterval = pointsFormatted.filter(
+      ([pointActivityTimeStart, pointActivityTimeEnd]: Array<any>) =>
+        rangeTimeStart >= pointActivityTimeStart &&
+        rangeTimeEnd <= pointActivityTimeEnd
+    )
+    const intervalFormatted = pointsRelatedToInterval.map(
+      ([, , { name, L0 }]: Array<any>) => ({ name: name, L0: L0 })
+    )
+    return {
+      interval: intervalFormatted,
+      duration: intervalDurationFormatted
+    }
+  })
+
+  console.log(resultFormatted)
+
+  points?.map((item: any) => {
     const I: number = SoundIntensity(item.value)
     arrayI.push(I)
     const L0: number = SoundIntensityLevel(I)
     arrayL0.push(L0)
     // second param width from Graph D3
-    const L: number = SoundPressureLevel(item.value, 30)
+    const L: number = SoundPressureLevel(
+      item.value,
+      item.distanceInMetersToSource
+    )
     arrayL.push(L)
   })
   return (
