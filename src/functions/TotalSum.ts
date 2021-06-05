@@ -11,21 +11,25 @@ const outputData = 112.2
 const TotalSoundLevel = (arrayWithTotalSoundLevel: Array<any>): number => {
   const denominatorArrBuffer: Array<number> = []
   const numeratorArrBuffer: Array<number> = []
-  // push value to buffer for denominator and push value to buffer for numerator separate
-  arrayWithTotalSoundLevel.forEach((interval: any) => {
-    denominatorArrBuffer.push(interval.duration)
-    const numeratorItem: number =
-      interval.duration * Math.pow(10, 0.1 * interval.totalValue)
-    numeratorArrBuffer.push(numeratorItem)
-  })
-  //calculate denominator
-  const denominator: number = denominatorArrBuffer.reduce(
-    (accumulator, currentValue) => accumulator + currentValue
-  )
-  //calculate numerator
-  const numerator: number = numeratorArrBuffer.reduce(
-    (accumulator, currentValue) => accumulator + currentValue
-  )
+  let numerator = 0
+  let denominator = 0
+  if (arrayWithTotalSoundLevel?.length > 1) {
+    // push value to buffer for denominator and push value to buffer for numerator separate
+    arrayWithTotalSoundLevel.forEach((interval: any) => {
+      denominatorArrBuffer.push(interval.duration)
+      const numeratorItem: number =
+        interval.duration * Math.pow(10, 0.1 * interval.totalValue)
+      numeratorArrBuffer.push(numeratorItem)
+    })
+    //calculate denominator
+    denominator = denominatorArrBuffer.reduce(
+      (accumulator, currentValue) => accumulator + currentValue
+    )
+    //calculate numerator
+    numerator = numeratorArrBuffer.reduce(
+      (accumulator, currentValue) => accumulator + currentValue
+    )
+  }
   return 10 * Math.log10(numerator / denominator)
 }
 export default TotalSoundLevel

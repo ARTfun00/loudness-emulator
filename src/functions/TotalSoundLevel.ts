@@ -22,39 +22,40 @@ Now after calculate we have 6 intervals
 
 const TotalSoundLevel = (arrayWithIntervals: Array<any>): Array<any> => {
   const result: Array<any> = []
-
-  arrayWithIntervals.forEach((interval: any) => {
-    if (interval.interval.length === 1) {
-      const LOnePoint: Array<number> = interval.interval.map(
-        (point: any) => point.L0
-      )
-      const LOnePointName: Array<string> = interval.interval.map(
-        (point: any) => point.name
-      )
-      result.push({
-        pointsName: LOnePointName,
-        totalValue: LOnePoint[0],
-        duration: interval.duration
-      })
-    }
-    if (interval.interval.length !== 0 && interval.interval.length > 1) {
-      const LArrayBuffer: Array<number> = interval.interval.map((point: any) =>
-        Math.pow(10, 0.1 * point.L0)
-      )
-      const LManyPointsName: Array<string> = interval.interval.map(
-        (point: any) => point.name + ' '
-      )
-      const sum: number = LArrayBuffer.reduce(
-        (accumulator, currentValue) => accumulator + currentValue
-      )
-      const LTotalManyPoints = 10 * Math.log10(sum)
-      result.push({
-        pointsName: LManyPointsName,
-        totalValue: LTotalManyPoints,
-        duration: interval.duration
-      })
-    }
-  })
+  if (arrayWithIntervals?.length > 0) {
+    arrayWithIntervals.forEach((interval: any) => {
+      if (interval.interval.length === 1) {
+        const LOnePoint: Array<number> = interval.interval.map(
+          (point: any) => point.L0
+        )
+        const LOnePointName: Array<string> = interval.interval.map(
+          (point: any) => point.name
+        )
+        result.push({
+          pointsName: LOnePointName,
+          totalValue: LOnePoint[0],
+          duration: interval.duration
+        })
+      }
+      if (interval.interval.length !== 0 && interval.interval.length > 1) {
+        const LArrayBuffer: Array<number> = interval.interval.map(
+          (point: any) => Math.pow(10, 0.1 * point.L0)
+        )
+        const LManyPointsName: Array<string> = interval.interval.map(
+          (point: any) => point.name + ' '
+        )
+        const sum: number = LArrayBuffer.reduce(
+          (accumulator, currentValue) => accumulator + currentValue
+        )
+        const LTotalManyPoints = 10 * Math.log10(sum)
+        result.push({
+          pointsName: LManyPointsName,
+          totalValue: LTotalManyPoints,
+          duration: interval.duration
+        })
+      }
+    })
+  }
   return result
 }
 export default TotalSoundLevel

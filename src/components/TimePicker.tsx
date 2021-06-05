@@ -21,7 +21,7 @@ const TimePickerDt = (props: TimePickerProps) => {
         onChange={onChange}
         minutesStep={30}
         placeholder="__:__ _M"
-        // defaultValue="2017-05-24T10:30"
+        defaultValue="2017-05-24T10:30"
         KeyboardButtonProps={{
           'aria-label': 'change time'
         }}
