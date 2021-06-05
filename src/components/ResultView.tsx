@@ -9,77 +9,10 @@ import TotalSoundLevel from '../functions/TotalSoundLevel'
 import TotalSum from '../functions/TotalSum'
 import moment from 'moment'
 
-const mockDataForPart2: Array<any> = [
-  {
-    interval: [
-      {
-        name: 'Point1',
-        L0: 103.4
-      }
-    ],
-    duration: 0.5
-  },
-  {
-    interval: [
-      {
-        name: 'Point1',
-        L0: 103.4
-      },
-      { name: 'Point3', L0: 115.4 }
-    ],
-    duration: 2.5
-  },
-  {
-    interval: [
-      {
-        name: 'Point2',
-        L0: 110.0
-      },
-      { name: 'Point3', L0: 115.4 }
-    ],
-    duration: 1.0
-  },
-  {
-    interval: [
-      {
-        name: 'Point2',
-        L0: 110.0
-      },
-      { name: 'Point3', L0: 115.4 },
-      {
-        name: 'Point4',
-        L0: 115.91
-      }
-    ],
-    duration: 1.5
-  },
-  {
-    interval: [
-      { name: 'Point3', L0: 115.4 },
-      {
-        name: 'Point4',
-        L0: 115.91
-      }
-    ],
-    duration: 0.5
-  },
-  {
-    interval: [
-      {
-        name: 'Point4',
-        L0: 115.91
-      }
-    ],
-    duration: 1.0
-  }
-]
-
 const ResultView = () => {
   const arrayI: Array<number> = []
   const arrayL0: Array<number> = []
   const arrayL: Array<number> = []
-  const arrayTotalSoundLevel: Array<any> = TotalSoundLevel(mockDataForPart2)
-  const LA: number = TotalSum(arrayTotalSoundLevel)
   const { points } = useStore()
   const pointsFormatted = points.map((point: any) => {
     let fromDayComputed = '01'
@@ -147,6 +80,8 @@ const ResultView = () => {
   })
 
   console.log(resultFormatted)
+  const arrayTotalSoundLevel: Array<any> = TotalSoundLevel(resultFormatted)
+  const LA: number = TotalSum(arrayTotalSoundLevel)
 
   points?.map((item: any) => {
     const I: number = SoundIntensity(item.value)
