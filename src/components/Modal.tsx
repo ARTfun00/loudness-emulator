@@ -6,20 +6,7 @@ import {
   DialogActions,
   Typography
 } from '@material-ui/core'
-import React from 'react'
-
-interface ModalProps {
-  open: any
-  dialogProps: any
-  title: string
-  children: any
-  buttonSubmitProps?: any
-  buttonCancelProps: any
-  buttonSubmitText?: string
-  buttonCancelText?: string
-  withoutButtonSubmit?: boolean
-  withoutButtonCancel?: boolean
-}
+import { ModalProps } from '../interfaces'
 
 const Modal = (props: ModalProps) => {
   const {

@@ -4,12 +4,8 @@ import { Modal, TimePointForm } from './index'
 import { useStoreContext, useStore } from '../context'
 import SoundIntensity from '../functions/SoundIntensity'
 import SoundIntensityLevel from '../functions/SoundIntensityLevel'
+import { CombinedProps } from '../interfaces'
 const { useForm } = require('mui-form-generator-fractal-band-2')
-
-interface CombinedProps {
-  title: string
-  children?: JSX.Element
-}
 
 const getRandomTillNumber = (maxValue = 1) =>
   Math.floor(Math.random() * maxValue) + 1

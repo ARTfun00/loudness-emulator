@@ -1,11 +1,8 @@
 import React, { useState } from 'react'
 import { Button } from '@material-ui/core'
 import { Modal, ResultView } from './index'
+import { CombinedProps } from '../interfaces'
 
-interface CombinedProps {
-  title: string
-  children?: JSX.Element
-}
 const CombinedShowResult: React.FC<CombinedProps> = (props) => {
   // [INTERFACES]
   const { title, children } = props

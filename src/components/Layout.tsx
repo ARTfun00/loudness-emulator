@@ -1,33 +1,18 @@
 import React, { useEffect, useRef } from 'react'
 import { Container, Col, Row } from '@qonsoll/react-design'
-// import { SizeForm, ListPoint } from './index'
 import { ListPoint } from './index'
-// import { Typography } from '@material-ui/core'
 import * as d3 from 'd3'
 import UserIcon from '../assets/user-icon.ico'
 import NoiceSourceIcon from '../assets/noice-source.ico'
 import { useStore, useStoreContext } from '../context'
 import _ from 'lodash'
-
-// const { useForm } = require('mui-form-generator-fractal-band-2')
+import { Node, Links } from '../interfaces'
 
 // window width in meters
 const areaWidthInMeters = 40
 const areaHeightInMeters = 40
 
-interface Nodes {
-  x: number
-  y: number
-  name?: string
-  icon?: string
-  isUser: boolean
-}
-// interface Links {
-//   source: number
-//   target: number
-// }
-
-const userNode: Nodes = {
+const userNode: Node = {
   x: 300,
   y: 300,
   name: 'Людина',
@@ -36,25 +21,18 @@ const userNode: Nodes = {
 }
 
 const Layout: React.FC<Record<string, unknown>> = ({}) => {
-  // const form = useForm()
   const d3ChartRef = useRef<HTMLDivElement>(null)
   const { points, areaWidth, areaHeight } = useStore()
   const { dispatch } = useStoreContext()
-  console.log('points:', points)
-
-  // const onSubmit = (data: any): void => {
-  //   console.log(data)
-  //   form.reset({})
-  // }
 
   useEffect(() => {
     let isComponentMounted = true
 
     if (isComponentMounted) {
-      const scalingMultiplierOfWidth = areaWidth / areaWidthInMeters
-      const scalingMultiplierOfHeight = areaHeight / areaHeightInMeters
+      const scalingMultiplierOfWidth: number = areaWidth / areaWidthInMeters
+      const scalingMultiplierOfHeight: number = areaHeight / areaHeightInMeters
 
-      const nodes = [
+      const nodes: Array<Node> = [
         userNode,
         ...points.map((point: any) => ({
           ...point,

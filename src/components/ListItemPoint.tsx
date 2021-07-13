@@ -1,14 +1,8 @@
 import { Col, Row } from '@qonsoll/react-design'
 import { ListItemText, Button, Paper, Typography } from '@material-ui/core'
 import { useStoreContext } from '../context'
-import React from 'react'
-interface ListItemProps {
-  name: string
-  start: string
-  end: string
-  value: number
-  id: any
-}
+import { ListItemProps } from '../interfaces'
+
 const ListItemPoint = (props: ListItemProps) => {
   const { name, start, end, value, id } = props
   const pointNameLabel = `Назва: ${name}`
