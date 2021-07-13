@@ -1,15 +1,11 @@
-import React from 'react'
 import 'date-fns'
 import DateFnsUtils from '@date-io/date-fns'
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker
 } from '@material-ui/pickers'
+import { TimePickerProps } from '../interfaces'
 
-interface TimePickerProps {
-  value: any
-  onChange: any
-}
 const TimePickerDt = (props: TimePickerProps) => {
   const { value, onChange } = props
   return (

@@ -1,6 +1,6 @@
 import Button from '@material-ui/core/Button'
-import React from 'react'
 import TimePicker from './TimePicker'
+import { TimePointProps } from '../interfaces'
 
 const {
   Form,
@@ -52,12 +52,7 @@ const config = [
     ]
   }
 ]
-interface TimePointProps {
-  onSubmit: any
-  form: any
-  buttonProps?: any
-  show: Array<string>
-}
+
 const TimePointForm = (props: TimePointProps) => {
   const { show, buttonProps, onSubmit, form } = props
   return (

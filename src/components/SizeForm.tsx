@@ -1,5 +1,6 @@
 import Button from '@material-ui/core/Button'
-import React from 'react'
+import { SizeFormProps } from '../interfaces'
+
 const {
   Form,
   FormGenerator,
@@ -30,12 +31,7 @@ const config = [
     ]
   }
 ]
-interface SizeFormProps {
-  onSubmit: any
-  form: any
-  buttonProps?: any
-  show: Array<string>
-}
+
 const SizeForm = (props: SizeFormProps) => {
   const { show, buttonProps, onSubmit, form } = props
   return (
